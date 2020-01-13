@@ -27,21 +27,16 @@ from pathlib import Path
 
 # try: curl -v -X GET http://127.0.0.1:8080/
 
-
 class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
-
         method = self.data.splitlines()[0].decode().split(" ")[0]
-
         sendBack = ""
-
         header = "\r\n\r\n"
 
         if method == " ":
-            print("Error: Can not determine request method!")
-        
+            print("Error: Can not determine request method!")    
         elif method == 'GET':
             file = self.data.splitlines()[0].decode().split(" ")[1]
             html301 = "<!DOCTYPE html><html><body>301 Moved Permanently</body><p>Redirected to %s/</p></html>"%file
@@ -49,13 +44,12 @@ class MyWebServer(socketserver.BaseRequestHandler):
             display = ""
             pathCheck = 0
             fileExtension = ""
-
             directoryPath = "www/" + file
+
             if Path(directoryPath).is_file():
                 open(directoryPath).read()
                 fileExtension = directoryPath.split(".")[1].lower()
                 pathCheck = 1
-
             elif not Path(directoryPath).is_file() and Path(directoryPath).is_dir():
                 pathEnding = directoryPath[-1]
                 if pathEnding != "/":
@@ -72,19 +66,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
             else:
                 display = html404
                 pathCheck = 0
-
             if pathCheck == 1 and fileExtension == "html":
-                sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/html\n" + "Connection: alive" + header + open(directoryPath).read()
-            
+                sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/html\n" + "Connection: alive" + header + open(directoryPath).read()         
             elif pathCheck == 1 and fileExtension == "css":
                 sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/css\n" + "Connection: alive" + header + open(directoryPath).read()
-
             elif pathCheck == 0 and display == html301:
                 sendBack = "HTTP/1.1 301 Permanently moved\r\n" + "Content-Type: html\n" + "Connection: close" + header + html301
-
             else:
                 sendBack = "HTTP/1.1 404 Not Found\r\n" + "Content-Type: html\n" + "Connection: close" + header + html404
-
         else:
             html405 = "<!DOCTYPE html><html><body>405 Method Not Allowed</body></html>"
             sendBack = "HTTP/1.1 405 Method Not Allowed\r\n" + "Content-Type: html\n" + "\n" + "Connection: close" + header + html405
