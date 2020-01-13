@@ -1,7 +1,6 @@
 #  coding: utf-8 
 import socketserver
 from pathlib import Path
-
 # Copyright 2013 Abram Hindle, Eddie Antonio Santos
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,11 +60,10 @@ class MyWebServer(socketserver.BaseRequestHandler):
                         fileExtension = directoryPath.split(".")[1].lower()
                         pathCheck = 1
                     else:
-                        display = html404
                         pathCheck = 0
             else:
-                display = html404
                 pathCheck = 0
+
             if pathCheck == 1 and fileExtension == "html":
                 sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/html\n" + "Connection: alive" + header + open(directoryPath).read()         
             elif pathCheck == 1 and fileExtension == "css":
