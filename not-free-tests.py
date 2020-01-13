@@ -61,7 +61,7 @@ class TestYourWebserver(unittest.TestCase):
         except request.HTTPError as e:
             self.assertTrue( e.getcode()  == 404 , ("404 Not FOUND! %d" % e.getcode()))
         else:
-            self.assertTrue( false, "Another Error was thrown!")
+            self.assertTrue( False, "Another Error was thrown!")
 
     def test_css(self):
         url = self.baseurl + "/base.css"
@@ -82,10 +82,14 @@ class TestYourWebserver(unittest.TestCase):
     # CMPUT404W19 did not have to pass to this
     def test_deep_no_end(self):
         url = self.baseurl + "/deep"
+        expected_url = self.baseurl + "/deep/"
         try:
             req = request.urlopen(url, None, 3)
             code = req.getcode() 
-            self.assertTrue(False, "We're not supposed to be here %s" % code)
+            if code >= 200 and code <= 299 and req.geturl() == expected_url:
+                 self.assertTrue(True, "The library has redirected for us")
+            else:
+                self.assertTrue(False, "The URL hasn't changed %s %s" % (code,req.geturl()))
         except request.HTTPError as e:
             code = e.getcode() 
             self.assertTrue( code >= 300 and code < 400, "300ish Not FOUND! %s" % code)

@@ -1,5 +1,6 @@
 #  coding: utf-8 
 import socketserver
+from pathlib import Path
 
 # Copyright 2013 Abram Hindle, Eddie Antonio Santos
 # 
@@ -31,8 +32,64 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
-        print ("Got a request of: %s\n" % self.data)
-        self.request.sendall(bytearray("OK",'utf-8'))
+
+        method = self.data.splitlines()[0].decode().split(" ")[0]
+
+        sendBack = ""
+
+        header = "\r\n\r\n"
+
+        if method == " ":
+            print("Error: Can not determine request method!")
+        
+        elif method == 'GET':
+            file = self.data.splitlines()[0].decode().split(" ")[1]
+            html301 = "<!DOCTYPE html><html><body>301 Moved Permanently</body><p>Redirected to %s/</p></html>"%file
+            html404 = "<!DOCTYPE html><html><body>404 Not Found</body></html>"
+            display = ""
+            pathCheck = 0
+            fileExtension = ""
+
+            directoryPath = "www/" + file
+            if Path(directoryPath).is_file():
+                open(directoryPath).read()
+                fileExtension = directoryPath.split(".")[1].lower()
+                pathCheck = 1
+
+            elif not Path(directoryPath).is_file() and Path(directoryPath).is_dir():
+                pathEnding = directoryPath[-1]
+                if pathEnding != "/":
+                    display = html301
+                    pathCheck = 0
+                elif pathEnding == "/":
+                    directoryPath = "www/"+file+"/index.html"   
+                    if Path(directoryPath).is_file():          
+                        fileExtension = directoryPath.split(".")[1].lower()
+                        pathCheck = 1
+                    else:
+                        display = html404
+                        pathCheck = 0
+            else:
+                display = html404
+                pathCheck = 0
+
+            if pathCheck == 1 and fileExtension == "html":
+                sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/html\n" + "Connection: alive" + header + open(directoryPath).read()
+            
+            elif pathCheck == 1 and fileExtension == "css":
+                sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/css\n" + "Connection: alive" + header + open(directoryPath).read()
+
+            elif pathCheck == 0 and display == html301:
+                sendBack = "HTTP/1.1 301 Permanently moved\r\n" + "Content-Type: html\n" + "Connection: close" + header + html301
+
+            else:
+                sendBack = "HTTP/1.1 404 Not Found\r\n" + "Content-Type: html\n" + "Connection: close" + header + html404
+
+        else:
+            html405 = "<!DOCTYPE html><html><body>405 Method Not Allowed</body></html>"
+            sendBack = "HTTP/1.1 405 Method Not Allowed\r\n" + "Content-Type: html\n" + "\n" + "Connection: close" + header + html405
+        
+        self.request.sendall(bytearray(sendBack,'utf-8'))
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
