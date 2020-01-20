@@ -56,6 +56,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
             display = ""
             pathCheck = 0
             fileExtension = ""
+            contentLength = str(len(file))
             directoryPath = "www/" + file
 
             if Path(directoryPath).is_file():
@@ -78,9 +79,9 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 pathCheck = 0
 
             if pathCheck == 1 and fileExtension == "html":
-                sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/html\n" + "Connection: alive" + header + open(directoryPath).read()         
+                sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/html\n" + "Connection: keep alive\n" + "Content Length: " + str(len(open(directoryPath).read())) + header + open(directoryPath).read()         
             elif pathCheck == 1 and fileExtension == "css":
-                sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/css\n" + "Connection: alive" + header + open(directoryPath).read()
+                sendBack = "HTTP/1.1 200 OK\n" + "Content-Type: text/css\n" + "Connection: keep alive\n" + "Content Length: " + str(len(open(directoryPath).read())) + header + open(directoryPath).read()
             elif pathCheck == 0 and display == html301:
                 sendBack = "HTTP/1.1 301 Permanently moved\r\n" + "Content-Type: html\n" + "Connection: close" + header + html301
             else:
