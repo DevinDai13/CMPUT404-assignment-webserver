@@ -26,6 +26,19 @@ from pathlib import Path
 
 # try: curl -v -X GET http://127.0.0.1:8080/
 
+#References:
+#"Python – Check If File or Directory Exists." tecadmin.net. Written by Rahul, Updated on April 4, 2017
+#https://tecadmin.net/python-check-file-directory-exists/ Accessed 01-12-2020
+
+#"Python String | splitlines()” GeeksforGeeks. 2020
+#https://www.geeksforgeeks.org/python-string-splitlines/ Accessed 01-09-2020
+
+#"https://stackoverflow.com/questions/13979764/python-converting-sock-recv-to-string"
+#answered bt abnert on Dec 20 '12 at 20:18
+
+#"Python String decode() Method" TutorialPoint. 2020
+#https://www.tutorialspoint.com/python/string_decode.htm
+
 class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
