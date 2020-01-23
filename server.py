@@ -1,7 +1,7 @@
 #  coding: utf-8 
 import socketserver
 from pathlib import Path
-# Copyright 2013 Abram Hindle, Eddie Antonio Santos
+# Copyright 2020 Abram Hindle, Eddie Antonio Santos, Devin Dai
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,18 +26,22 @@ from pathlib import Path
 
 # try: curl -v -X GET http://127.0.0.1:8080/
 
-#References:
-#"Python – Check If File or Directory Exists." tecadmin.net. Written by Rahul, Updated on April 4, 2017
-#https://tecadmin.net/python-check-file-directory-exists/ Accessed 01-12-2020
+# References:
+# "Python – Check If File or Directory Exists." tecadmin.net. Written by Rahul, Updated on April 4, 2017
+# https://tecadmin.net/python-check-file-directory-exists/ Accessed 01-12-2020
 
-#"Python String | splitlines()” GeeksforGeeks. 2020
-#https://www.geeksforgeeks.org/python-string-splitlines/ Accessed 01-09-2020
+# "Python String | splitlines()” GeeksforGeeks. 2020
+# https://www.geeksforgeeks.org/python-string-splitlines/ Accessed 01-09-2020
 
-#"https://stackoverflow.com/questions/13979764/python-converting-sock-recv-to-string"
-#answered bt abnert on Dec 20 '12 at 20:18
+# "https://stackoverflow.com/questions/13979764/python-converting-sock-recv-to-string"
+# answered bt abnert on Dec 20 '12 at 20:18
 
-#"Python String decode() Method" TutorialPoint. 2020
-#https://www.tutorialspoint.com/python/string_decode.htm
+# "Python String decode() Method" TutorialPoint. 2020
+# https://www.tutorialspoint.com/python/string_decode.htm Accessed 01-17-2020
+
+# "Python | bytearray() function" GeeksforGeeks. 2020
+# https://www.geeksforgeeks.org/python-bytearray-function/ Accessed 01-17-2020
+
 
 class MyWebServer(socketserver.BaseRequestHandler):
     
@@ -48,27 +52,26 @@ class MyWebServer(socketserver.BaseRequestHandler):
         header = "\r\n\r\n"
 
         if method == " ":
-            print("Error: Can not determine request method!")    
+            print("Can not determine request method!")    
         elif method == 'GET':
             file = self.data.splitlines()[0].decode().split(" ")[1]
             html301 = "<!DOCTYPE html><html><body>301 Moved Permanently</body><p>Redirected to %s/</p></html>"%file
             html404 = "<!DOCTYPE html><html><body>404 Not Found</body></html>"
             display = ""
-            pathCheck = 0
+            pathCheck = 0 # path check flag
             fileExtension = ""
-            contentLength = str(len(file))
             directoryPath = "www/" + file
 
-            if Path(directoryPath).is_file():
+            if Path(directoryPath).is_file(): # if path is good, just read file
                 open(directoryPath).read()
                 fileExtension = directoryPath.split(".")[1].lower()
                 pathCheck = 1
-            elif not Path(directoryPath).is_file() and Path(directoryPath).is_dir():
+            elif not Path(directoryPath).is_file() and Path(directoryPath).is_dir(): # if is a directory but not a file
                 pathEnding = directoryPath[-1]
-                if pathEnding != "/":
+                if pathEnding != "/":   # if the path ending is not a /
                     display = html301
                     pathCheck = 0
-                elif pathEnding == "/":
+                elif pathEnding == "/":  # if the path ending is a /, read file
                     directoryPath = "www/"+file+"/index.html"   
                     if Path(directoryPath).is_file():          
                         fileExtension = directoryPath.split(".")[1].lower()
@@ -90,7 +93,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
             html405 = "<!DOCTYPE html><html><body>405 Method Not Allowed</body></html>"
             sendBack = "HTTP/1.1 405 Method Not Allowed\r\n" + "Content-Type: html\n" + "\n" + "Connection: close" + header + html405
         
-        self.request.sendall(bytearray(sendBack,'utf-8'))
+        self.request.sendall(bytearray(sendBack,'utf-8'))  # just send back stuff based on the path (URL) requested by GET
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080

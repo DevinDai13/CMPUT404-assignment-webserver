@@ -37,7 +37,10 @@ https://www.geeksforgeeks.org/python-string-splitlines/ Accessed 01-09-2020
 answered bt abnert on Dec 20 '12 at 20:18
 
 "Python String decode() Method" TutorialPoint. 2020
-https://www.tutorialspoint.com/python/string_decode.htm
+https://www.tutorialspoint.com/python/string_decode.htm Accessed 01-17-2020
+
+"Python | bytearray() function" GeeksforGeeks. 2020
+https://www.geeksforgeeks.org/python-bytearray-function/ Accessed 01-17-2020
 
 
 
